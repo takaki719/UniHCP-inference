@@ -740,6 +740,21 @@ class DeepFashionParsingDataset(Human3M6ParsingDataset):
     15:'rightarm',#
     16:'bag',#
     17:'scarf',#
+
+    Actual label list source: https://github.com/switchablenorms/DeepFashion2
+    1 represents short sleeve top, 
+    2 represents long sleeve top, 
+    3 represents short sleeve outwear, 
+    4 represents long sleeve outwear, 
+    5 represents vest, 
+    6 represents sling, 
+    7 represents shorts, 
+    8 represents trousers, 
+    9 represents skirt, 
+    10 represents short sleeve dress, 
+    11 represents long sleeve dress, 
+    12 represents vest dress and 
+    13 represents sling dress.
     """
     task_name = 'DeepFashion_parsing'
     label_mapper = np.arange(60)
@@ -812,6 +827,40 @@ class DeepFashionParsingDataset(Human3M6ParsingDataset):
 
 
 class VIPParsingDataset(Human3M6ParsingDataset):
+    """
+    Label definition source: https://arxiv.org/pdf/1808.00661.pdf
+
+    To analyse every detailed region of a person including different body parts 
+    as well as different clothes styles, following the largest still image human parsing LIP dataset [13], 
+    we defined 19 usual clothes classes and body parts for annotation, which are 
+    
+    Hat, Hair, Sunglasses, Upper-clothes, Dress, Coat, Socks, Pants, Gloves, Scarf, Skirt, Torso-skin, Face, Right/Left arm, Right/Left leg, and Right/Left shoe.
+
+
+    LIP: (jumpsuits is changed to Torso-skin)
+
+    CIHP (same label set): 
+    0:'background',
+    1:'hat',
+    2:'hair',
+    3:'glove',
+    4:'sunglasses',
+    5:'upperclothes',
+    6:'dress',
+    7:'coat',
+    8:'socks',
+    9:'pants',
+    10:'torsoSkin',
+    11:'scarf',
+    12:'skirt',
+    13:'face',
+    14:'leftArm',
+    15:'rightArm',
+    16:'leftLeg',
+    17:'rightLeg',
+    18:'leftShoe',
+    19:'rightShoe'
+    """
     task_name = 'VIP_parsing'
     left_right_pairs = np.array(
         [[14, 15], [16, 17], [18, 19]]
@@ -880,6 +929,9 @@ class VIPParsingDataset(Human3M6ParsingDataset):
 
 
 class ModaNetParsingDataset(Human3M6ParsingDataset):
+    """
+    Label definition:  https://github.com/eBay/modanet#labels
+    """
     task_name = 'ModaNet_parsing'
     label_mapper = np.arange(60)
     left_right_pairs = None

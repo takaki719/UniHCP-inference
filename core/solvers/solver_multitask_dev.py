@@ -627,7 +627,8 @@ class TesterMultiTaskDev(SolverMultiTaskDev):
         self.ginfo = ginfo
 
         # change tensor .cuda
-        change_tensor_cuda()
+        if not hasattr(torch.Tensor, "ori_cuda"): # to allow initiating this Tester multiple times
+            change_tensor_cuda()
 
         self.tmp = edict()
 

@@ -505,8 +505,8 @@ def add_backbone_specific(m, backbone_specific):
         param.backbone_specific = backbone_specific
         param.neck_specific = False
         param.decoder_specific = False
-        if backbone_specific:
-            printlog('add param {} as backbone_specific'.format(name))
+        # if backbone_specific:
+        #     printlog('add param {} as backbone_specific'.format(name))
 
     if not hasattr(torch.nn.Module, 'named_buffers'):
         printlog('registering named_buffers for nn.Module at add_backbone_specific')
@@ -518,8 +518,8 @@ def add_backbone_specific(m, backbone_specific):
         buffer.backbone_specific = backbone_specific
         buffer.neck_specific = False
         buffer.decoder_specific = False
-        if backbone_specific:
-            printlog('add buffer {} as backbone_specific'.format(name))
+        # if backbone_specific:
+        #     printlog('add buffer {} as backbone_specific'.format(name))
 
 def add_neck_specific(m, neck_specific):
     for name, param in m.named_parameters():
@@ -527,8 +527,8 @@ def add_neck_specific(m, neck_specific):
         param.backbone_specific = False
         param.neck_specific = neck_specific
         param.decoder_specific = False
-        if neck_specific:
-            printlog('add param {} as neck_specific'.format(name))
+        # if neck_specific:
+        #     printlog('add param {} as neck_specific'.format(name))
 
     if not hasattr(torch.nn.Module, 'named_buffers'):
         printlog('registering named_buffers for nn.Module at add_neck_specific')
@@ -540,8 +540,8 @@ def add_neck_specific(m, neck_specific):
         buffer.backbone_specific = False
         buffer.neck_specific = neck_specific
         buffer.decoder_specific = False
-        if neck_specific:
-            printlog('add buffer {} as neck_specific'.format(name))
+        # if neck_specific:
+        #     printlog('add buffer {} as neck_specific'.format(name))
 
 def add_decoder_specific(m, decoder_specific):
     for name, param in m.named_parameters():
@@ -549,8 +549,8 @@ def add_decoder_specific(m, decoder_specific):
         param.backbone_specific = False
         param.neck_specific = False
         param.decoder_specific = decoder_specific
-        if decoder_specific:
-            printlog('add param {} as decoder_specific'.format(name))
+        # if decoder_specific:
+        #     printlog('add param {} as decoder_specific'.format(name))
 
     if not hasattr(torch.nn.Module, 'named_buffers'):
         printlog('registering named_buffers for nn.Module at add_decoder_specific')
@@ -562,8 +562,8 @@ def add_decoder_specific(m, decoder_specific):
         buffer.backbone_specific = False
         buffer.neck_specific = False
         buffer.decoder_specific = decoder_specific
-        if decoder_specific:
-            printlog('add buffer {} as decoder_specific'.format(name))
+        # if decoder_specific:
+        #     printlog('add buffer {} as decoder_specific'.format(name))
 
 def add_aio_backbone_specific(m, backbone_specific, task_sp_list=(), neck_sp_list=()):
     for name, param in m.named_parameters():
@@ -574,12 +574,12 @@ def add_aio_backbone_specific(m, backbone_specific, task_sp_list=(), neck_sp_lis
         param.backbone_specific = False if _task_sp_flag or _neck_sp_flag else backbone_specific
         param.neck_specific = _neck_sp_flag
         param.decoder_specific = False
-        if _task_sp_flag:
-            printlog('add param {} as task_specific'.format(name))
-        elif _neck_sp_flag:
-            printlog('add param {} as neck_specific'.format(name))
-        elif backbone_specific:
-            printlog('add param {} as backbone_specific'.format(name))
+        # if _task_sp_flag:
+        #     printlog('add param {} as task_specific'.format(name))
+        # elif _neck_sp_flag:
+        #     printlog('add param {} as neck_specific'.format(name))
+        # elif backbone_specific:
+        #     printlog('add param {} as backbone_specific'.format(name))
 
     if not hasattr(torch.nn.Module, 'named_buffers'):
         printlog('registering named_buffers for nn.Module at add_backbone_specific')
@@ -594,12 +594,12 @@ def add_aio_backbone_specific(m, backbone_specific, task_sp_list=(), neck_sp_lis
         buffer.backbone_specific = False if _task_sp_flag or _neck_sp_flag else backbone_specific
         buffer.neck_specific = _neck_sp_flag
         buffer.decoder_specific = False
-        if _task_sp_flag:
-            printlog('add buffer {} as task_specific'.format(name))
-        elif _neck_sp_flag:
-            printlog('add buffer {} as neck_specific'.format(name))
-        elif backbone_specific:
-            printlog('add buffer {} as backbone_specific'.format(name))
+        # if _task_sp_flag:
+        #     printlog('add buffer {} as task_specific'.format(name))
+        # elif _neck_sp_flag:
+        #     printlog('add buffer {} as neck_specific'.format(name))
+        # elif backbone_specific:
+        #     printlog('add buffer {} as backbone_specific'.format(name))
 
 def add_aio_neck_specific(m, neck_specific, task_sp_list=()):
     for name, param in m.named_parameters():
@@ -609,10 +609,10 @@ def add_aio_neck_specific(m, neck_specific, task_sp_list=()):
         param.backbone_specific = False
         param.neck_specific = False if _task_sp_flag else neck_specific
         param.decoder_specific = False
-        if _task_sp_flag:
-            printlog('add param {} as task_specific'.format(name))
-        elif neck_specific:
-            printlog('add param {} as neck_specific'.format(name))
+        # if _task_sp_flag:
+        #     printlog('add param {} as task_specific'.format(name))
+        # elif neck_specific:
+        #     printlog('add param {} as neck_specific'.format(name))
 
     if not hasattr(torch.nn.Module, 'named_buffers'):
         printlog('registering named_buffers for nn.Module at add_neck_specific')
@@ -626,10 +626,10 @@ def add_aio_neck_specific(m, neck_specific, task_sp_list=()):
         buffer.backbone_specific = False
         buffer.neck_specific = False if _task_sp_flag else neck_specific
         buffer.decoder_specific = False
-        if _task_sp_flag:
-            printlog('add buffer {} as task_specific'.format(name))
-        elif neck_specific:
-            printlog('add buffer {} as neck_specific'.format(name))
+        # if _task_sp_flag:
+        #     printlog('add buffer {} as task_specific'.format(name))
+        # elif neck_specific:
+        #     printlog('add buffer {} as neck_specific'.format(name))
 
 def add_aio_decoder_specific(m, decoder_specific, task_sp_list=(), neck_sp_list=()):
     for name, param in m.named_parameters():
@@ -641,12 +641,12 @@ def add_aio_decoder_specific(m, decoder_specific, task_sp_list=(), neck_sp_list=
         param.neck_specific = _neck_sp_flag
         param.decoder_specific = False if _task_sp_flag or _neck_sp_flag else decoder_specific
 
-        if _task_sp_flag:
-            printlog('add param {} as task_specific'.format(name))
-        elif _neck_sp_flag:
-            printlog('add param {} as neck_specific'.format(name))
-        elif decoder_specific:
-            printlog('add param {} as decoder_specific'.format(name))
+        # if _task_sp_flag:
+        #     printlog('add param {} as task_specific'.format(name))
+        # elif _neck_sp_flag:
+        #     printlog('add param {} as neck_specific'.format(name))
+        # elif decoder_specific:
+        #     printlog('add param {} as decoder_specific'.format(name))
 
     if not hasattr(torch.nn.Module, 'named_buffers'):
         printlog('registering named_buffers for nn.Module at add_decoder_specific')
@@ -661,12 +661,12 @@ def add_aio_decoder_specific(m, decoder_specific, task_sp_list=(), neck_sp_list=
         buffer.backbone_specific = False
         buffer.neck_specific = _neck_sp_flag
         buffer.decoder_specific = False if _task_sp_flag or _neck_sp_flag else decoder_specific
-        if _task_sp_flag:
-            printlog('add buffer {} as task_specific'.format(name))
-        elif _neck_sp_flag:
-            printlog('add buffer {} as neck_specific'.format(name))
-        elif decoder_specific:
-            printlog('add buffer {} as decoder_specific'.format(name))
+        # if _task_sp_flag:
+        #     printlog('add buffer {} as task_specific'.format(name))
+        # elif _neck_sp_flag:
+        #     printlog('add buffer {} as neck_specific'.format(name))
+        # elif decoder_specific:
+        #     printlog('add buffer {} as decoder_specific'.format(name))
 
 
 def copy_state_dict_cpu(state_dict):

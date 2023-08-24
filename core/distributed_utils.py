@@ -159,6 +159,41 @@ def broadcast_params_multitask(model, task_grp, share_backbone_group, share_neck
                 raise RuntimeError('buffer {} does not have task_specific'.format(name, id(b)))
 
 
+# def get_rank():
+#     return int(os.environ.get('SLURM_PROCID', 0))
+
+# def get_local_rank():
+#     return get_rank() % torch.cuda.device_count()
+
+# def get_world_size():
+#     return int(os.environ.get('SLURM_NTASKS', 1))
+
+# def dist_init(method='slurm', port='5671'):
+#     assert method == 'slurm'
+#     proc_id = int(os.environ['SLURM_PROCID'])
+#     num_gpus = torch.cuda.device_count()
+#     torch.cuda.set_device(proc_id % num_gpus)
+
+#     world_size = get_world_size()
+#     rank = get_rank()
+
+#     addr = subprocess.getoutput(
+#         "scontrol show hostname {} | head -n1".format(os.environ["SLURM_NODELIST"])
+#     )
+#     os.environ["MASTER_PORT"] = port
+#     os.environ["MASTER_ADDR"] = addr
+#     os.environ["WORLD_SIZE"] = str(world_size)
+#     os.environ["RANK"] = str(rank)
+
+
+#     dist.init_process_group(
+#         backend="nccl",
+#         world_size=world_size,
+#         rank=rank,
+#     )
+
+#     return rank, world_size
+
 def get_rank():
     return int(os.environ.get('SLURM_PROCID', 0))
 
@@ -168,23 +203,16 @@ def get_local_rank():
 def get_world_size():
     return int(os.environ.get('SLURM_NTASKS', 1))
 
-def dist_init(method='slurm', port='5671'):
-    assert method == 'slurm'
-    proc_id = int(os.environ['SLURM_PROCID'])
-    num_gpus = torch.cuda.device_count()
-    torch.cuda.set_device(proc_id % num_gpus)
+def dist_init(gpu=0):
+    torch.cuda.set_device(gpu)
 
     world_size = get_world_size()
     rank = get_rank()
 
-    addr = subprocess.getoutput(
-        "scontrol show hostname {} | head -n1".format(os.environ["SLURM_NODELIST"])
-    )
-    os.environ["MASTER_PORT"] = port
-    os.environ["MASTER_ADDR"] = addr
+    os.environ['MASTER_ADDR'] = 'localhost'
+    os.environ['MASTER_PORT'] = '12355'
     os.environ["WORLD_SIZE"] = str(world_size)
     os.environ["RANK"] = str(rank)
-
 
     dist.init_process_group(
         backend="nccl",
