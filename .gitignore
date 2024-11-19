@@ -22,7 +22,8 @@ bak*
 
 itchat.pkl
 server.txt
-
+*.pth
+*.il
 caffemodels/
 feats/
 nart_tools/
