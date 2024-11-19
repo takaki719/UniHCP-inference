@@ -16,7 +16,7 @@ import torch
 import torch.nn as nn
 import torch.backends.cudnn as cudnn
 
-from torch._six import string_classes
+from six import string_types as string_classes
 from torch.utils.data import DataLoader
 from core.data.datasets.images.seg_dataset_dev import Instances
 from core.data.transforms.pose_transforms import DataContainer
@@ -41,7 +41,7 @@ from dict_recursive_update import recursive_update
 from collections import OrderedDict
 from collections.abc import Mapping
 from contextlib import ExitStack, contextmanager
-from .solver_deter import SolverDeter, WorkerInit
+from core.solvers.solver_deter import SolverDeter, WorkerInit
 from core.utils import nested_tensor_from_tensor_list, nested_tensor_from_tensor_list_fix_shape
 
 from core import distributed_utils as dist

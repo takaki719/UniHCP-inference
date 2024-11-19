@@ -1,5 +1,5 @@
 import torch
-from torch._six import inf
+inf = float('inf')
 
 from .utils import iter_params
 
