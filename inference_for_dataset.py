@@ -30,6 +30,7 @@ import os
 import re
 import yaml
 loader = yaml.SafeLoader
+from PIL import Image
 loader.add_implicit_resolver(
     u'tag:yaml.org,2002:float',
     re.compile(u'''^(?:
@@ -60,32 +61,37 @@ import core.data.transforms.parsing_transforms as T
 
 parser = argparse.ArgumentParser(description='Non-slurm-based inference script to run pre-trained model')
 parser.add_argument('--gpu', type=int, default=0)
-parser.add_argument('--dataset_dir', type=str, default="ip_data/test_data/sample_hp_ssense_dataset")
+parser.add_argument('--input_dir', type=str, default="/media/il/local2/Virtual_try_on/Preprocessing/test/output/判別結果/スケルトン全体の形状に基づく判定/forward")
+#parser.add_argument('--seg_dir', type=str, default="/media/il/local2/Virtual_try_on/Preprocessing/test/output/判別結果/スケルトン全体の形状に基づく判定/prepro/seg")
+parser.add_argument('--label_dir', type=str, default="/media/il/local2/Virtual_try_on/Preprocessing/test/output/判別結果/スケルトン全体の形状に基づく判定/prepro/label")
+
 
 UNIHCP_OUTPUT_SAVENAME = "uniHCP.png"
 UNIHCP_OUTPUT2OURS_SAVENAME = "uniHCP_ours.png"
 
-merged_cls_label = ['background', 'outerwear', 'allbody', 'tops', 'bottoms', 'face', 'shoe'] + \
-                    ["torsoSkin","leftArm", "rightArm", "leftLeg", "rightLeg"] 
+merged_cls_label = ['background', 'Hair', 'Upclothes', 'Left-shoe', 'Right-shoe', 'Noise', 'Pants'] + \
+                    ["Left_leg","Right_leg", "Left_arm", "Face", "Right_arm"] 
 hp2uni_seg_map = { # translate UniHCP-CIHP format to our format
-    1: merged_cls_label.index("face"),
-    2: merged_cls_label.index("face"),
-    4: merged_cls_label.index("face"),
-    5: merged_cls_label.index("tops"),
-    6: merged_cls_label.index("allbody"),
-    7: merged_cls_label.index("outerwear"),
-    9: merged_cls_label.index("bottoms"),
-    10: merged_cls_label.index("torsoSkin"),
-    12: merged_cls_label.index("bottoms"),
-    13: merged_cls_label.index("face"),
-    14: merged_cls_label.index("leftArm"),
-    15: merged_cls_label.index("rightArm"),
-    16: merged_cls_label.index("leftLeg"),
-    17: merged_cls_label.index("rightLeg"),
-    18: merged_cls_label.index("shoe"),
-    19: merged_cls_label.index("shoe"),
+    1: merged_cls_label.index("Hair"),
+    2: merged_cls_label.index("Hair"),
+    5: merged_cls_label.index("Upclothes"),
+    6: merged_cls_label.index("Upclothes"),
+    7: merged_cls_label.index("Upclothes"),
+    10: merged_cls_label.index("Upclothes"),
+    18: merged_cls_label.index("Left-shoe"),
+    19: merged_cls_label.index("Right-shoe"),
+    3: merged_cls_label.index("Noise"),
+    8: merged_cls_label.index("Noise"),
+    11: merged_cls_label.index("Noise"),
+    9: merged_cls_label.index("Pants"),
+    12: merged_cls_label.index("Pants"),
+    16: merged_cls_label.index("Left_leg"),
+    17: merged_cls_label.index("Right_leg"),
+    14: merged_cls_label.index("Left_arm"),
+    4: merged_cls_label.index("Face"),
+    13: merged_cls_label.index("Face"),
+    15: merged_cls_label.index("Right_arm"),
 }
-
 def get_palette(num_cls):
     """ Returns the color map for visualizing the segmentation mask.
     Args:
@@ -151,7 +157,7 @@ class ProductInferenceParsingDataset(Human3M6ParsingDataset):
         dataset_dict = {}
         product_path = self.product_list[index]
         dataset_dict["product_path"] = product_path
-        img_path = f"{product_path}/ou.png"
+        img_path = product_path
         
         image = cv2.imread(img_path, cv2.IMREAD_COLOR)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -168,13 +174,12 @@ def load_args():
     TASK="par_cihp_lpe"
     GINFO_INDEX="4"
     # save_name = "UniHCP-CIHP"
-
     job_name='coslr1e3_104k_b4324g88_h256_I2k_1_10_001_2I_fairscale_m256'  #${4-debug}
-    CONFIG_BASE = "experiments/unihcp/release"
+    CONFIG_BASE = "/media/il/local2/Virtual_try_on/Preprocessing/modules/UniHCP-inference/experiments/unihcp/release"
     PRETRAIN_JOB_NAME=job_name #${6-${job_name}}
     CONFIG=f"{CONFIG_BASE}/{job_name}.yaml"
     TEST_CONFIG=f"{CONFIG_BASE}/vd_{TASK}_test.yaml"
-    TEST_MODEL=f"checkpoints/{PRETRAIN_JOB_NAME}/ckpt_task{GINFO_INDEX}_iter_newest.pth.tar"
+    TEST_MODEL=f"/media/il/local2/Virtual_try_on/Preprocessing/modules/UniHCP-inference/checkpoints/{PRETRAIN_JOB_NAME}/ckpt_task{GINFO_INDEX}_iter_newest.pth.tar"
 
     assert os.path.isfile(CONFIG)
     assert os.path.isfile(TEST_CONFIG)
@@ -197,7 +202,8 @@ def load_args():
 def main():
     args = parser.parse_args()
     dist_init(gpu=args.gpu)
-    dataset_dir = args.dataset_dir
+    dataset_dir = args.input_dir
+    label_dir = args.label_dir
 
     # load config
     args = load_args() # real default argument for inference
@@ -226,7 +232,7 @@ def main():
     S.create_model()
     print("-- Load checkpoint")
     S.load_args = args
-    S.load(args);
+    S.load(args)
 
     # load palette for debugging
     palette_merged = get_palette(len(merged_cls_label))
@@ -247,17 +253,23 @@ def main():
             for i, output in enumerate(outputs):
                 par_pred = output["sem_seg"]
                 output = par_pred.argmax(dim=0).cpu()
-                pred = np.array(output, dtype=np.int)
+                pred = np.array(output, dtype=int)
                 product_path = S.tmp.input_var["product_path"][i]
-                save_path = os.path.join(product_path, UNIHCP_OUTPUT_SAVENAME)
-                cv2.imwrite(save_path, pred)
+
+                product_id_with_ext = os.path.basename(product_path)  # '000014'
+                product_id = os.path.splitext(product_id_with_ext)[0] 
+                save_filename = f'{product_id}.png'
+                #save_path = os.path.join(seg_dir, save_filename)
+                #cv2.imwrite(save_path, pred)
 
                 # save UniHCP-CIHP converted to our output format
                 hp2uni_img = np.zeros_like(pred)
                 for hp_cls, uni_seg_cls in hp2uni_seg_map.items():
                     hp2uni_img[ (pred==hp_cls) ] = uni_seg_cls
-                save_path = os.path.join(product_path, UNIHCP_OUTPUT2OURS_SAVENAME)
+
+                save_path = os.path.join(label_dir, save_filename)
                 cv2.imwrite(save_path, hp2uni_img)
+
                 # print("Save to", save_path)
 
                 # debug
