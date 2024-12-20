@@ -1,5 +1,7 @@
 # UniHCP: A Unified Model for Human-Centric Perceptions
 
+ACGPN format adapt
+
 ## Changes to the Original Repo:
 Follow and extract code from [batch_test.sh](experiments/unihcp/release/batch_test.sh) and [test.py](test.py) to create 
 simple-to-use non-slurm-based distributed single-gpu inference code for **human parsing** task, 
